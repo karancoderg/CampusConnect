@@ -1,0 +1,10 @@
+{
+  "name": "college-social-media-frontend",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "echo \"hook up your framework dev script here\"",
+    "build": "echo \"hook up your framework build script here\"",
+    "preview": "echo \"hook up your framework preview script here\""
+  }
+}
