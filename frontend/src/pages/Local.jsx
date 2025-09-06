@@ -16,6 +16,7 @@ const Local = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [localEvents, setLocalEvents] = useState(events);
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -23,12 +24,12 @@ const Local = () => {
     time: '',
     location: '',
     category: 'Social',
-    maxAttendees: 20
+    notes: ''
   });
   
   const eventTypes = ['all', 'Workshop', 'Study Group', 'Social', 'Wellness', 'Academic'];
   
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = localEvents.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -40,8 +41,23 @@ const Local = () => {
     e.preventDefault();
     if (!newEvent.title || !newEvent.date || !newEvent.time || !newEvent.location) return;
     
-    // Here you would typically call actions.addEvent(newEvent)
-    console.log('Creating event:', newEvent);
+    const eventToCreate = {
+      id: Date.now(),
+      title: newEvent.title,
+      description: newEvent.description,
+      date: new Date(newEvent.date + 'T' + newEvent.time),
+      time: newEvent.time,
+      location: newEvent.location,
+      organizer: "You",
+      attendees: 0,
+      maxAttendees: 50,
+      category: newEvent.category,
+      isAttending: false,
+      notes: newEvent.notes,
+      image: "https://picsum.photos/seed/" + Date.now() + "/400/200"
+    };
+    
+    setLocalEvents(prev => [eventToCreate, ...prev]);
     
     // Reset form
     setNewEvent({
@@ -51,7 +67,7 @@ const Local = () => {
       time: '',
       location: '',
       category: 'Social',
-      maxAttendees: 20
+      notes: ''
     });
     setShowCreateEvent(false);
   };
@@ -259,15 +275,14 @@ const Local = () => {
                   
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      Max Attendees
+                      Notes/Requirements
                     </label>
                     <input
-                      type="number"
-                      value={newEvent.maxAttendees}
-                      onChange={(e) => setNewEvent({...newEvent, maxAttendees: parseInt(e.target.value)})}
-                      min="1"
-                      max="500"
+                      type="text"
+                      value={newEvent.notes}
+                      onChange={(e) => setNewEvent({...newEvent, notes: e.target.value})}
                       className="w-full p-3 bg-secondary/30 border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
+                      placeholder="Special requirements or notes"
                     />
                   </div>
                 </div>

@@ -9,7 +9,8 @@ import Explore from './Explore.jsx';
 import Skills from './Skills.jsx';
 import Local from './Local.jsx';
 import Wellness from './Wellness.jsx';
-import Voice from './Voice.jsx';
+import Profile from './Profile.jsx';
+import Chat from './Chat.jsx';
 
 const Index = () => {
   const { state, actions } = useApp();
@@ -20,7 +21,8 @@ const Index = () => {
       case 'skills': return <Skills />;
       case 'local': return <Local />;
       case 'wellness': return <Wellness />;
-      case 'voice': return <Voice />;
+      case 'profile': return <Profile />;
+      case 'chat': return <Chat />;
       default: return <Feed />;
     }
   };

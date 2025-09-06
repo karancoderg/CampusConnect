@@ -74,26 +74,26 @@ const PostCard = ({ post }) => {
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-foreground">
+            <h3 className="font-semibold text-foreground truncate max-w-[150px] sm:max-w-none">
               {post.isAnonymous ? 'Anonymous' : post.displayName}
             </h3>
             {!post.isAnonymous && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground truncate max-w-[100px] sm:max-w-none">
                 @{post.username}
               </span>
             )}
             <span className="text-sm text-muted-foreground">•</span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
               {formatTimeAgo(post.timestamp)}
             </span>
           </div>
           
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground truncate max-w-[120px] sm:max-w-none">
               #{post.community}
             </span>
             {mood && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <span className="text-sm">{mood.emoji}</span>
                 <span className="text-xs text-muted-foreground capitalize">
                   {mood.name}

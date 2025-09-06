@@ -17,6 +17,8 @@ import {
 
 const Wellness = () => {
   const [selectedMood, setSelectedMood] = useState(null);
+  const [showAddGoal, setShowAddGoal] = useState(false);
+  const [newGoalText, setNewGoalText] = useState('');
   const [todayGoals, setTodayGoals] = useState([
     { id: 1, task: "Meditate for 10 minutes", completed: false },
     { id: 2, task: "Take a 20-minute walk", completed: true },
@@ -101,6 +103,19 @@ const Wellness = () => {
         goal.id === goalId ? { ...goal, completed: !goal.completed } : goal
       )
     );
+  };
+
+  const addNewGoal = () => {
+    if (newGoalText.trim()) {
+      const newGoal = {
+        id: Date.now(),
+        task: newGoalText.trim(),
+        completed: false
+      };
+      setTodayGoals(goals => [...goals, newGoal]);
+      setNewGoalText('');
+      setShowAddGoal(false);
+    }
   };
   
   const completedGoals = todayGoals.filter(goal => goal.completed).length;
@@ -248,10 +263,44 @@ const Wellness = () => {
               ))}
             </div>
             
-            <button className="w-full mt-4 px-4 py-2 border-2 border-dashed border-border/50 rounded-lg text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors flex items-center justify-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add wellness goal
-            </button>
+            {showAddGoal ? (
+              <div className="mt-4 p-3 bg-secondary/20 rounded-lg border border-border/50">
+                <input
+                  type="text"
+                  value={newGoalText}
+                  onChange={(e) => setNewGoalText(e.target.value)}
+                  placeholder="Enter your wellness goal..."
+                  className="w-full p-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 mb-3"
+                  onKeyPress={(e) => e.key === 'Enter' && addNewGoal()}
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={addNewGoal}
+                    className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:opacity-90 transition-opacity"
+                  >
+                    Add Goal
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddGoal(false);
+                      setNewGoalText('');
+                    }}
+                    className="px-3 py-1 bg-secondary text-secondary-foreground rounded text-sm hover:bg-secondary/80 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setShowAddGoal(true)}
+                className="w-full mt-4 px-4 py-2 border-2 border-dashed border-border/50 rounded-lg text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add wellness goal
+              </button>
+            )}
           </div>
           
           {/* Wellness Resources */}

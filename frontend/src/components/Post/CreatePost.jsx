@@ -1,19 +1,15 @@
 // ConnectHub - Create Post Component
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext.jsx';
 import { moods, communities, postTypes } from '../../data/dummyData.js';
 import { 
   Image as ImageIcon, 
   Code, 
-  Mic, 
   Calendar,
   Smile,
   Hash,
   Send,
-  X,
-  Play,
-  Pause,
-  Volume2
+  X
 } from 'lucide-react';
 
 const CreatePost = () => {
@@ -27,13 +23,26 @@ const CreatePost = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [codeSnippet, setCodeSnippet] = useState('');
   const [showCodeEditor, setShowCodeEditor] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [showCommunityPicker, setShowCommunityPicker] = useState(false);
   
   const fileInputRef = useRef(null);
-  const recordingIntervalRef = useRef(null);
+  const moodPickerRef = useRef(null);
+  const communityPickerRef = useRef(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (moodPickerRef.current && !moodPickerRef.current.contains(event.target)) {
+        setShowMoodPicker(false);
+      }
+      if (communityPickerRef.current && !communityPickerRef.current.contains(event.target)) {
+        setShowCommunityPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -55,26 +64,6 @@ const CreatePost = () => {
     }
   };
   
-  const toggleRecording = () => {
-    if (isRecording) {
-      setIsRecording(false);
-      clearInterval(recordingIntervalRef.current);
-      setRecordingTime(0);
-    } else {
-      setIsRecording(true);
-      setRecordingTime(0);
-      recordingIntervalRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
-    }
-  };
-  
-  const formatRecordingTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -83,7 +72,7 @@ const CreatePost = () => {
     const newPost = {
       userId: selectedType.name === 'Anonymous' ? 0 : state.currentUser.id,
       username: selectedType.name === 'Anonymous' ? 'anonymous' : state.currentUser.username,
-      displayName: selectedType.name === 'Anonymous' ? 'Anonymous' : state.currentUser.displayName,
+      displayName: selectedType.name === 'Anonymous' ? '' : state.currentUser.displayName,
       avatar: selectedType.name === 'Anonymous' ? '/api/placeholder/40/40' : state.currentUser.avatar,
       community: selectedCommunity?.name || 'General',
       mood: selectedMood?.name || 'neutral',
@@ -95,10 +84,6 @@ const CreatePost = () => {
       ...(selectedType.name === 'Time Capsule' && unlockDate && {
         unlockDate: new Date(unlockDate),
         isLocked: true
-      }),
-      ...(selectedType.name === 'Voice Note' && {
-        voiceNote: true,
-        duration: recordingTime
       })
     };
     
@@ -114,7 +99,6 @@ const CreatePost = () => {
     setImagePreview(null);
     setCodeSnippet('');
     setShowCodeEditor(false);
-    setRecordingTime(0);
     
     actions.addNotification({
       id: Date.now(),
@@ -207,42 +191,6 @@ const CreatePost = () => {
           </div>
         )}
         
-        {/* Voice Recording */}
-        {selectedType.name === 'Voice Note' && (
-          <div className="mb-4 bg-gradient-to-r from-hub-primary/10 to-hub-secondary/10 rounded-lg p-4 border border-primary/20">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={toggleRecording}
-                className={`
-                  w-12 h-12 rounded-full flex items-center justify-center font-medium transition-all duration-200
-                  ${isRecording 
-                    ? 'bg-hub-danger text-white animate-pulse-glow' 
-                    : 'bg-primary text-primary-foreground hover:opacity-90'
-                  }
-                `}
-              >
-                {isRecording ? (
-                  <Pause className="w-5 h-5" />
-                ) : (
-                  <Mic className="w-5 h-5" />
-                )}
-              </button>
-              
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground mb-1">
-                  {isRecording ? 'Recording...' : 'Ready to record'}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-hub-primary" />
-                  <span className="text-sm text-muted-foreground">
-                    {formatRecordingTime(recordingTime)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         
         {/* Image Preview */}
         {imagePreview && (
@@ -318,7 +266,7 @@ const CreatePost = () => {
             </button>
             
             {/* Mood Picker */}
-            <div className="relative">
+            <div className="relative" ref={moodPickerRef}>
               <button
                 type="button"
                 onClick={() => setShowMoodPicker(!showMoodPicker)}
@@ -360,7 +308,7 @@ const CreatePost = () => {
             </div>
             
             {/* Community Picker */}
-            <div className="relative">
+            <div className="relative" ref={communityPickerRef}>
               <button
                 type="button"
                 onClick={() => setShowCommunityPicker(!showCommunityPicker)}
@@ -408,14 +356,14 @@ const CreatePost = () => {
           </div>
           
           {/* Selected Tags */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {selectedCommunity && (
-              <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground">
+              <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground truncate max-w-[120px] sm:max-w-none">
                 #{selectedCommunity.name}
               </span>
             )}
             {selectedMood && (
-              <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground flex items-center gap-1">
+              <span className="text-xs bg-secondary/50 px-2 py-1 rounded-full text-secondary-foreground flex items-center gap-1 flex-shrink-0">
                 <span>{selectedMood.emoji}</span>
                 <span className="capitalize">{selectedMood.name}</span>
               </span>

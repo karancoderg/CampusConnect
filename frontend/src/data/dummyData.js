@@ -171,7 +171,7 @@ export const posts = [
     id: 3,
     userId: 0, // Anonymous
     username: "anonymous",
-    displayName: "Anonymous",
+    displayName: "", // Empty for anonymous posts
     avatar: "/api/placeholder/40/40",
     community: "WellnessWarriors",
     timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
@@ -389,6 +389,5 @@ export const moods = [
 export const postTypes = [
   { id: 1, name: "Public", description: "Share with everyone" },
   { id: 2, name: "Anonymous", description: "Post anonymously" },
-  { id: 3, name: "Time Capsule", description: "Unlock in the future" },
-  { id: 4, name: "Voice Note", description: "Record audio message" }
+  { id: 3, name: "Time Capsule", description: "Unlock in the future" }
 ];

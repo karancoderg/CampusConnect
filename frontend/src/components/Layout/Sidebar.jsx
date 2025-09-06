@@ -8,7 +8,7 @@ import {
   BookOpen, 
   MapPin, 
   Heart, 
-  Mic,
+  MessageCircle,
   Users,
   TrendingUp,
   Hash,
@@ -24,7 +24,7 @@ const Sidebar = () => {
     { id: 'skills', label: 'Skills', icon: BookOpen },
     { id: 'local', label: 'Local', icon: MapPin },
     { id: 'wellness', label: 'Wellness', icon: Heart },
-    { id: 'voice', label: 'Voice', icon: Mic }
+    { id: 'chat', label: 'Chat', icon: MessageCircle }
   ];
   
   const trendingCommunities = communities.filter(c => c.trending);

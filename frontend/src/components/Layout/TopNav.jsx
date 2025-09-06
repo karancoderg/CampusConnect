@@ -1,5 +1,5 @@
 // ConnectHub - Top Navigation Bar
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext.jsx';
 import { 
   Menu, 
@@ -17,6 +17,23 @@ const TopNav = () => {
   const { state, actions } = useApp();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  
+  const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const toggleTheme = () => {
     actions.setTheme(state.theme === 'dark' ? 'light' : 'dark');
@@ -54,7 +71,7 @@ const TopNav = () => {
           </button>
           
           {/* Notifications */}
-          <div className="relative">
+          <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="p-2 rounded-lg hover:bg-secondary/50 transition-colors relative"
@@ -108,7 +125,7 @@ const TopNav = () => {
           </button>
           
           {/* Profile Menu */}
-          <div className="relative">
+          <div className="relative" ref={profileRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center gap-2 p-1 rounded-lg hover:bg-secondary/50 transition-colors"
@@ -127,7 +144,13 @@ const TopNav = () => {
             {/* Profile Dropdown */}
             {showProfileMenu && (
               <div className="absolute right-0 top-12 w-48 bg-card border border-border rounded-xl shadow-elevated p-2 animate-slide-in-right">
-                <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 transition-colors text-left">
+                <button 
+                  onClick={() => {
+                    actions.setCurrentPage('profile');
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/50 transition-colors text-left"
+                >
                   <User className="w-4 h-4" />
                   <span className="text-sm">Profile</span>
                 </button>
@@ -136,7 +159,10 @@ const TopNav = () => {
                   <span className="text-sm">Settings</span>
                 </button>
                 <hr className="my-2 border-border" />
-                <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors text-left">
+                <button 
+                  onClick={actions.logout}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors text-left"
+                >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm">Logout</span>
                 </button>

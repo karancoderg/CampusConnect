@@ -1,10 +1,10 @@
-// ConnectHub - Voice Page
+// ConnectHub - Chat Page
 import React from 'react';
 import ChatList from '../components/Chat/ChatList.jsx';
 import ChatWindow from '../components/Chat/ChatWindow.jsx';
 import { MessageCircle } from 'lucide-react';
 
-const Voice = () => {
+const Chat = () => {
   return (
     <div className="w-full h-[calc(100vh-12rem)] max-w-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
@@ -24,4 +24,4 @@ const Voice = () => {
   );
 };
 
-export default Voice;
+export default Chat;

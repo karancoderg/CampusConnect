@@ -180,6 +180,32 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  /* Text overflow utilities for better anonymous post handling */
+  .text-ellipsis-responsive {
+    @apply truncate;
+  }
+  
+  @screen sm {
+    .text-ellipsis-responsive {
+      @apply text-clip;
+      white-space: normal;
+      overflow: visible;
+    }
+  }
+  
+  /* Ensure proper word breaking for long usernames and content */
+  .break-words-safe {
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  /* Prevent text overflow in flex containers */
+  .flex-text-safe {
+    min-width: 0;
+    flex-shrink: 1;
+  }
 }
 
 @keyframes float {

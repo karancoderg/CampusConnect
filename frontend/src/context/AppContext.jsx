@@ -5,8 +5,11 @@ import { posts as initialPosts, events as initialEvents, users, chatRooms, study
 const AppContext = createContext();
 
 const initialState = {
-  // User state
-  currentUser: users[0], // Default to first user
+  // Authentication
+  isAuthenticated: false,
+  currentUser: null,
+  
+  // App state
   theme: 'dark',
   
   // Posts and feed
@@ -34,6 +37,20 @@ const initialState = {
 
 const appReducer = (state, action) => {
   switch (action.type) {
+    case 'LOGIN':
+      return { 
+        ...state, 
+        isAuthenticated: true, 
+        currentUser: action.payload 
+      };
+      
+    case 'LOGOUT':
+      return { 
+        ...state, 
+        isAuthenticated: false, 
+        currentUser: null 
+      };
+      
     case 'SET_THEME':
       return { ...state, theme: action.payload };
       
@@ -215,6 +232,8 @@ export const AppProvider = ({ children }) => {
   }, [state.posts]);
   
   const actions = {
+    login: (user) => dispatch({ type: 'LOGIN', payload: user }),
+    logout: () => dispatch({ type: 'LOGOUT' }),
     setTheme: (theme) => dispatch({ type: 'SET_THEME', payload: theme }),
     setCurrentPage: (page) => dispatch({ type: 'SET_CURRENT_PAGE', payload: page }),
     toggleSidebar: () => dispatch({ type: 'TOGGLE_SIDEBAR' }),
