@@ -103,30 +103,32 @@ const EventCard = ({ event }) => {
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="w-4 h-4 flex-shrink-0" />
-            <span>{event.attendees} / {event.maxAttendees} attending</span>
+            <span>{event.attendees} people joined</span>
           </div>
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <ExternalLink className="w-4 h-4 flex-shrink-0" />
-            <span className="truncate">{event.organizer}</span>
+            <span>Requirements: {event.notes || 'None specified'}</span>
           </div>
         </div>
         
-        {/* Attendance Progress */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Attendance</span>
-            <span className="text-foreground font-medium">
-              {getAttendancePercentage()}%
-            </span>
+        {/* Attendance Progress - Only show for events not created by current user */}
+        {event.organizer !== "You" && (
+          <div className="mb-6">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-muted-foreground">Attendance</span>
+              <span className="text-foreground font-medium">
+                {getAttendancePercentage()}%
+              </span>
+            </div>
+            <div className="w-full bg-secondary/50 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-primary rounded-full transition-all duration-500"
+                style={{ width: `${getAttendancePercentage()}%` }}
+              />
+            </div>
           </div>
-          <div className="w-full bg-secondary/50 rounded-full h-2 overflow-hidden">
-            <div 
-              className="h-full bg-gradient-primary rounded-full transition-all duration-500"
-              style={{ width: `${getAttendancePercentage()}%` }}
-            />
-          </div>
-        </div>
+        )}
         
         {/* Action Button */}
         <button

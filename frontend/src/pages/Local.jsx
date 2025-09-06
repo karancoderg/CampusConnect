@@ -1,7 +1,7 @@
 // ConnectHub - Local Page
 import React, { useState } from 'react';
 import EventCard from '../components/Events/EventCard.jsx';
-import { events } from '../data/dummyData.js';
+import { useApp } from '../context/AppContext.jsx';
 import { 
   MapPin, 
   Calendar, 
@@ -13,10 +13,20 @@ import {
 } from 'lucide-react';
 
 const Local = () => {
+  const { state, actions } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [localEvents, setLocalEvents] = useState(events);
+  const eventTypes = ['all', 'Workshop', 'Study Group', 'Social', 'Wellness', 'Academic'];
+  
+  const filteredEvents = state.events.filter(event => {
+    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || event.category === filterType;
+    return matchesSearch && matchesFilter;
+  });
+  
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -27,37 +37,26 @@ const Local = () => {
     notes: ''
   });
   
-  const eventTypes = ['all', 'Workshop', 'Study Group', 'Social', 'Wellness', 'Academic'];
-  
-  const filteredEvents = localEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || event.category === filterType;
-    return matchesSearch && matchesFilter;
-  });
-  
   const handleCreateEvent = (e) => {
     e.preventDefault();
     if (!newEvent.title || !newEvent.date || !newEvent.time || !newEvent.location) return;
     
     const eventToCreate = {
-      id: Date.now(),
       title: newEvent.title,
       description: newEvent.description,
       date: new Date(newEvent.date + 'T' + newEvent.time),
       time: newEvent.time,
       location: newEvent.location,
       organizer: "You",
-      attendees: 0,
+      attendees: 1,
       maxAttendees: 50,
       category: newEvent.category,
-      isAttending: false,
+      isAttending: true,
       notes: newEvent.notes,
       image: "https://picsum.photos/seed/" + Date.now() + "/400/200"
     };
     
-    setLocalEvents(prev => [eventToCreate, ...prev]);
+    actions.addEvent(eventToCreate);
     
     // Reset form
     setNewEvent({
