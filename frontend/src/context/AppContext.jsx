@@ -100,7 +100,36 @@ const appReducer = (state, action) => {
         ...state,
         posts: state.posts.map(post => 
           post.id === action.payload.postId 
-            ? { ...post, comments: post.comments + 1 }
+            ? { 
+                ...post, 
+                comments: post.comments + 1,
+                commentsList: [
+                  ...(post.commentsList || []),
+                  {
+                    id: Date.now(),
+                    text: action.payload.comment,
+                    author: state.currentUser?.username || 'Anonymous',
+                    timestamp: new Date()
+                  }
+                ]
+              }
+            : post
+        ),
+        filteredPosts: state.filteredPosts.map(post => 
+          post.id === action.payload.postId 
+            ? { 
+                ...post, 
+                comments: post.comments + 1,
+                commentsList: [
+                  ...(post.commentsList || []),
+                  {
+                    id: Date.now(),
+                    text: action.payload.comment,
+                    author: state.currentUser?.username || 'Anonymous',
+                    timestamp: new Date()
+                  }
+                ]
+              }
             : post
         )
       };
